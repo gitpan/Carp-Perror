@@ -8,16 +8,20 @@ require Exporter;
 
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(perror pexit);
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub perror
 {
-	pexit(-1, @_);
+	pexit(@_);
 }
 
 sub pexit
 {
-	my $exitcode = int(shift @_);
+	my $exitcode = 0;
+	if ( $_[0] =~ /^[0-9]+$/ )
+	{
+		$exitcode = int(shift @_);
+	}
 	my $w = join " ", @_;
 	print "$w";
 	exit $exitcode;
@@ -37,8 +41,14 @@ Carp::Perror - print msg then exit
   pexit(1, "wrong argv given\n");
   # got "wrong argv given", exit code = 1;
 
+  pexit("wrong argv given\n");
+  # got "wrong argv given", exit code = 0;
+
+  perror(1, "wrong argv given\n");
+  # got "wrong argv given", exit code = 1;
+
   perror("wrong argv given\n");
-  # got "wrong argv given", exit code = -1;
+  # got "wrong argv given", exit code = 0;
 
 =head1 DESCRIPTION
 
@@ -52,11 +62,13 @@ None by default.
 
 =head2 pexit()
 
-exit with defined exit code.
+exit with defined exit code if the first argv is a number.
+
+else exit with 0.
 
 =head2 perror()
 
-exit with exit code -1.
+just a alias of pexit().
 
 =head1 SEE ALSO
 
